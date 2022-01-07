@@ -1,0 +1,6 @@
+FROM python:3.7
+ENV DEBIAN_FRONTEND noninteractive
+COPY backend-requirements.txt .
+RUN pip install -r backend-requirements.txt --use-deprecated=legacy-resolver
+ADD ./test ./test
+WORKDIR test

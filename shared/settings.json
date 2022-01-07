@@ -1,0 +1,20 @@
+{
+    "docker": {
+        "docker_network": "oxen_frontend_box",
+        "redis_settings": "redis://:changeme_a2ddxg4810d312d3s1@oxen_redis:6379/0",
+        "celery_settings": {
+            "celery_broker_url": "redis://:changeme_a2ddxg4810d312d3s1@oxen_redis:6379/0",
+            "celery_result_backend": "redis://:changeme_a2ddxg4810d312d3s1@oxen_redis:6379/0",
+            "name": "tasks"
+        },
+        "output_folder": "/home/test/Desktop/oxen/output",
+        "task_logs": {
+            "box_output": "/output/"
+        },
+        "worker": {
+            "overall_task_time_limit": 200,
+            "name": "oxen",
+            "queue": "oxen_queue"
+        }
+    }
+}

@@ -1,0 +1,62 @@
+version: '2.1'
+services:
+  workers_api:
+    build:
+      context: .
+      dockerfile: ./backend-Dockerfile
+    command: celery -A worker worker --concurrency=1 -l WARNING -Q oxen_queue
+    restart: always
+    privileged: true
+    environment:
+      - project_env=docker
+    depends_on:
+      - redis
+    networks:
+      - backend
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./shared:/shared
+      - /usr/bin/docker:/usr/bin/docker
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/root/.docker/config.json
+
+  test:
+    build:
+      context: .
+      dockerfile: ./test-Dockerfile
+    command: python3 test.py
+    restart: always
+    depends_on:
+      - redis
+      - workers_api
+    environment:
+      - project_env=docker
+    networks:
+      - backend
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./shared:/shared
+
+  box:
+    build:
+      context: .
+      dockerfile: ./box-Dockerfile
+    networks:
+      - frontend_box
+
+  redis:
+    image: redis
+    container_name: oxen_redis
+    command: redis-server --requirepass changeme_a2ddxg4810d312d3s1
+    networks:
+      - backend
+    ports:
+     - "6379:6379"
+
+networks:
+  backend:
+    internal: true
+  frontend_box:
+    internal: false
